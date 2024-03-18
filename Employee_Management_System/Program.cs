@@ -220,13 +220,13 @@ namespace EMSApplication
         // Add Employee
         static void AddEmployee(EmployeeManager manager)
         {
-            // employee variables
+            // Employee Variables
             int id = 0;
             int departmentNumber = 0;
             double salary = 0;
             string firstName = "", lastName = "";
 
-            // employee validation
+            // Employee Validation
             bool isValidIdInput = false;
             bool isValidFirstNameInput = false;
             bool isValidLastNameInput = false;
@@ -390,8 +390,11 @@ namespace EMSApplication
         // Assign Employee to Department
         static void AssignEmployeeToDepartment(EmployeeManager manager)
         {
+            // Department Variables
             int empId = 0;
             int depIndex = 0;
+
+            // Department Validation
             bool isValidInput = false;
             bool isValidNumberInput = false;
 
