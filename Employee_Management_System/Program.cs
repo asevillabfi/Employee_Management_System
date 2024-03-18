@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace EMSApplication
 {
@@ -78,12 +79,12 @@ namespace EMSApplication
             if (employeeToRemove != null)
             {
                 employees.Remove(employeeToRemove);
-                Console.WriteLine($"Employee with ID {employeeId} removed successfully.");
+                Console.WriteLine($"Employee ID# {employeeId} removed successfully.");
                 totalEmployees--;
             }
             else
             {
-                Console.WriteLine($"Employee with ID {employeeId} is not found.");
+                Console.WriteLine($"Employee ID# {employeeId} is not found.");
             }
         }
 
@@ -133,268 +134,58 @@ namespace EMSApplication
             bool exit = false;
             while (!exit)
             {
-                Console.WriteLine("\n---------------------------");
-                Console.WriteLine("Employee Management System\n");
-                Console.WriteLine("1. Add Employee");
-                Console.WriteLine("2. Remove Employee");
-                Console.WriteLine("3. View All Employees");
-                Console.WriteLine("4. Calculate Total Salary");
-                Console.WriteLine("5. Total Number of Employees");
-                Console.WriteLine("6. Assign Employee to Department");
-                Console.WriteLine("7. Exit");
-                Console.Write("\nEnter your choice: ");
+                DisplayMenu();
 
                 int choice;
                 if (!int.TryParse(Console.ReadLine(), out choice))
                 {
-                    Console.WriteLine("---------------------------\n");
+                    Line();
                     Console.WriteLine("Invalid input. Please enter a number.");
                     continue;
                 }
-
-                Console.WriteLine("---------------------------\n");
 
                 switch (choice)
                 {
                     // Case 1
                     // Add Employee
                     case 1:
-                        // employee variables
-                        int id = 0;
-                        int departmentNumber = 0;
-                        double salary = 0;
-                        string firstName = "", lastName = "";
-                        string input;
-
-                        // employee validation
-                        bool isValidIdInput = false;
-                        bool isValidFirstNameInput = false;
-                        bool isValidLastNameInput = false;
-                        bool isValidSalaryInput = false;
-                        bool isValidDepInput = false;
-
-                        // Employee ID                        
-                        while (!isValidIdInput)
-                        {
-                            Console.Write("Enter Employee ID: ");
-                            input = Console.ReadLine();
-
-                            if (int.TryParse(input, out id))
-                            {
-                                // Check if the employee ID is unique
-                                if (manager.Employees.Any(emp => emp.EmployeeId == id))
-                                {
-                                    Console.WriteLine("Employee ID already exists. Please use a unique ID");
-                                }
-                                else
-                                {
-                                    isValidIdInput = true;
-                                }
-                            }
-                            else
-                            {
-                                Console.WriteLine("Invalid input. Please enter a valid ID.");
-                            }
-                        }
-
-                        // First Name
-                        while (!isValidFirstNameInput)
-                        {
-                            Console.Write("Enter First Name: ");
-                            firstName = Console.ReadLine();
-
-                            if (!string.IsNullOrEmpty(firstName))
-                            {
-                                isValidFirstNameInput = true;
-                            }
-                            else
-                            {
-                                Console.WriteLine("Invalid input. Please enter a valid First name.");
-                            }
-                        }
-
-                        // Last Name
-                        while (!isValidLastNameInput)
-                        {
-                            Console.Write("Enter Last Name: ");
-                            lastName = Console.ReadLine();
-
-                            if (!string.IsNullOrEmpty(lastName))
-                            {
-                                isValidLastNameInput = true;
-                            }
-                            else
-                            {
-                                Console.WriteLine("Invalid input. Please enter a valid Last name.");
-                            }
-                        }
-
-                        // Salary
-                        while (!isValidSalaryInput)
-                        {
-                            Console.Write("Enter Salary: ");
-                            input = Console.ReadLine();
-
-                            if (double.TryParse(input, out salary))
-                            {
-                                if (salary <= 0)
-                                {
-                                    Console.WriteLine("Invalid amount. Please enter a valid Salary.");
-                                }
-                                else
-                                {
-                                    isValidSalaryInput = true;
-                                }
-                            }
-                            else
-                            {
-                                Console.WriteLine("Invalid input. Please enter a valid Salary.");
-                            }
-                        }
-
-                        // Display departments starting from 1
-                        Console.WriteLine("Select Department:");
-                        int departmentIndex = 1;
-                        foreach (Department department in Enum.GetValues(typeof(Department)))
-                        {
-                            Console.WriteLine($"{departmentIndex}. {department}");
-                            departmentIndex++;
-                        }
-
-                        // Input Department
-                        while (!isValidDepInput)
-                        {
-                            Console.Write("Enter Department (by number): ");
-                            input = Console.ReadLine();
-
-                            if (int.TryParse(input, out departmentNumber))
-                            {
-                                if (Enum.IsDefined(typeof(Department), departmentNumber - 1))
-                                {
-                                    isValidDepInput = true;
-                                }
-                                else
-                                {
-                                    Console.WriteLine("Invalid number. Please enter a number from above.");
-                                }
-                            }
-                            else
-                            {
-                                Console.WriteLine("Invalid input. Please enter a valid Department number.");
-                            }
-                        }
-
-                        Department departmentSelected = (Department)(departmentNumber - 1);
-
-                        Employee newEmployee = new Employee(id, firstName, lastName, salary, departmentSelected);
-                        manager.AddEmployee(newEmployee);
+                        Line();
+                        AddEmployee(manager);
                         break;
 
                     // Case 2
                     // Remove Employee
                     case 2:
-                        // Check if there are no employees to remove
-                        if (manager.Employees.Count < 1)
-                        {
-                            Console.WriteLine("There are no employees to remove.");
-                            break;
-                        }
-                        Console.Write("Enter Employee ID to remove: ");
-                        int removeId = int.Parse(Console.ReadLine());
-                        manager.RemoveEmployee(removeId);
+                        Line();
+                        RemoveEmployee(manager);                        
                         break;
 
                     // Case 3
                     // View Employees
                     case 3:
+                        Line();
                         manager.ViewEmployees();
                         break;
 
                     // Case 4
                     // Calculate Total Salary
                     case 4:
+                        Line();
                         manager.CalculateTotalSalary();
                         break;
 
                     // Case 5
                     // Total Number of Employees
                     case 5:
-                        Console.WriteLine($"Total number of employees: {EmployeeManager.TotalEmployees}");
+                        Line();
+                        TotalEmployees(manager);
                         break;
 
                     // Case 6
                     // Assign Employee to a Department
                     case 6:
-                        int empId = 0;
-                        int depIndex = 0;
-                        bool isValidInput = false;
-                        bool isValidNumberInput = false;
-
-                        // Check if there are no employees to assign/change department
-                        if (manager.Employees.Count < 1)
-                        {
-                            Console.WriteLine("There are no employees to assign department.");
-                            break;
-                        }
-
-                        // Assigning department to employee
-                        while (!isValidInput)
-                        {
-                            Console.WriteLine("Enter Employee ID to assign department");
-                            Console.Write("ID# ");
-                            input = Console.ReadLine();
-
-                            if (int.TryParse(input, out empId))
-                            {
-                                Employee employeeToAssign = manager.Employees.FirstOrDefault(emp => emp.EmployeeId == empId);
-
-                                if (employeeToAssign != null)
-                                {
-                                    Console.WriteLine("Select Department:");
-                                    int departIndex = 1;
-                                    foreach (Department department in Enum.GetValues(typeof(Department)))
-                                    {
-                                        Console.WriteLine($"{departIndex}. {department}");
-                                        departIndex++;
-                                    }
-
-                                    while (!isValidNumberInput)
-                                    {
-                                        Console.Write("Enter Department (by number): ");
-                                        input = Console.ReadLine();
-                                        if (int.TryParse(input, out depIndex))
-                                        {
-                                            if (Enum.IsDefined(typeof(Department), depIndex - 1))
-                                            {
-                                                Department depSelected = (Department)(depIndex - 1);
-                                                manager.AssignEmployeeToDepartment(employeeToAssign, depSelected);
-
-                                                isValidInput = true;
-                                                break;
-                                            }
-                                            else
-                                            {
-                                                Console.WriteLine("Invalid number. Please enter a number from above.");
-                                            }
-                                        }
-                                        else
-                                        {
-                                            Console.WriteLine("Invalid input. Please enter a valid number.");
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    Console.WriteLine($"\nEmployee ID#{empId} is not found.\n");
-                                    continue;
-                                }
-                            }
-                            else
-                            {
-                                Console.WriteLine("\nInvalid input. Please enter a valid ID.\n");
-                                continue;
-                            }
-                        }                      
+                        Line();
+                        AssignEmployeeToDepartment(manager);              
                         break;
 
                     // Case 7
@@ -404,10 +195,272 @@ namespace EMSApplication
                         break;
 
                     default:
-                        Console.WriteLine("Invalid choice. Please try again.");
+                        Line();
+                        Console.WriteLine("Invalid choice. Please enter a number (1-7).");
                         break;
                 }
             }
+        }
+
+        // Display the Menu
+        static void DisplayMenu()
+        {
+            Line();
+            Console.WriteLine("Employee Management System\n");
+            Console.WriteLine("1. Add Employee");
+            Console.WriteLine("2. Remove Employee");
+            Console.WriteLine("3. View All Employees");
+            Console.WriteLine("4. Calculate Total Salary");
+            Console.WriteLine("5. Total Number of Employees");
+            Console.WriteLine("6. Assign Employee to Department");
+            Console.WriteLine("7. Exit");
+            Console.Write("\nEnter your choice: ");
+        }
+
+        // Add Employee
+        static void AddEmployee(EmployeeManager manager)
+        {
+            // employee variables
+            int id = 0;
+            int departmentNumber = 0;
+            double salary = 0;
+            string firstName = "", lastName = "";
+
+            // employee validation
+            bool isValidIdInput = false;
+            bool isValidFirstNameInput = false;
+            bool isValidLastNameInput = false;
+            bool isValidSalaryInput = false;
+            bool isValidDepInput = false;
+
+            // Employee ID                        
+            while (!isValidIdInput)
+            {
+                Console.Write("Enter Employee ID: ");
+                if (int.TryParse(Console.ReadLine(), out id))
+                {
+                    // Check if the employee ID is unique
+                    if (manager.Employees.Any(emp => emp.EmployeeId == id))
+                    {
+                        Console.WriteLine("Employee ID already exists. Please use a unique ID");
+                    }
+                    else
+                    {
+                        isValidIdInput = true;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Invalid input. Please enter a valid ID.");
+                }
+            }
+
+            // First Name
+            while (!isValidFirstNameInput)
+            {
+                Console.Write("Enter First Name: ");
+                firstName = Console.ReadLine();
+
+                // Trim to remove spaces
+                firstName = firstName.Trim();
+
+                if (!string.IsNullOrEmpty(firstName) && Regex.IsMatch(firstName, @"^[a-zA-Z]+$"))
+                {
+                    isValidFirstNameInput = true;
+                }
+                else
+                {
+                    Console.WriteLine("Invalid input. Please enter a valid First name.");
+                }
+            }
+
+            // Last Name
+            while (!isValidLastNameInput)
+            {
+                Console.Write("Enter Last Name: ");
+                lastName = Console.ReadLine();
+
+                // Trim to remove spaces
+                lastName = lastName.Trim();
+
+                if (!string.IsNullOrEmpty(lastName) && Regex.IsMatch(lastName, @"^[a-zA-Z]+$"))
+                {
+                    isValidLastNameInput = true;
+                }
+                else
+                {
+                    Console.WriteLine("Invalid input. Please enter a valid Last name.");
+                }
+            }
+
+            // Salary
+            while (!isValidSalaryInput)
+            {
+                Console.Write("Enter Salary: ");
+                if (double.TryParse(Console.ReadLine(), out salary))
+                {
+                    if (salary <= 0)
+                    {
+                        Console.WriteLine("Invalid amount. Please enter a valid Salary.");
+                    }
+                    else
+                    {
+                        isValidSalaryInput = true;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Invalid input. Please enter a valid Salary.");
+                }
+            }
+
+            // Display departments starting from 1
+            Console.WriteLine("Select Department:");
+            int departmentIndex = 1;
+            foreach (Department department in Enum.GetValues(typeof(Department)))
+            {
+                Console.WriteLine($"{departmentIndex}. {department}");
+                departmentIndex++;
+            }
+
+            // Input Department
+            while (!isValidDepInput)
+            {
+                Console.Write("Enter Department (by number): ");
+                if (int.TryParse(Console.ReadLine(), out departmentNumber))
+                {
+                    if (Enum.IsDefined(typeof(Department), departmentNumber - 1))
+                    {
+                        isValidDepInput = true;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid number. Please enter a number from above.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Invalid input. Please enter a valid Department number.");
+                }
+            }
+
+            Department departmentSelected = (Department)(departmentNumber - 1);
+
+            Employee newEmployee = new Employee(id, firstName, lastName, salary, departmentSelected);
+            manager.AddEmployee(newEmployee);
+        }
+
+        // Remove Employee
+        static void RemoveEmployee(EmployeeManager manager)
+        {
+            // Check if there are no employees to remove
+            if (manager.Employees.Count < 1)
+            {
+                Console.WriteLine("There are no employees to remove.");
+            }
+            else
+            {
+                int removeId = 0;
+                bool isValid = false;
+
+                while (!isValid)
+                {
+                    Console.WriteLine("Enter Employee ID to remove");
+                    Console.Write("ID# ");
+                    //int removeId = int.Parse(Console.ReadLine());
+                    if (int.TryParse(Console.ReadLine(), out removeId))
+                    {
+                        isValid = true;
+                        manager.RemoveEmployee(removeId);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid input. Please enter a valid ID.");
+                    }
+                }
+            }
+        }
+
+        // Total Number of Employees
+        static void TotalEmployees(EmployeeManager manager)
+        {
+            Console.WriteLine($"Total number of employees: {EmployeeManager.TotalEmployees}");
+        }
+
+        // Assign Employee to Department
+        static void AssignEmployeeToDepartment(EmployeeManager manager)
+        {
+            int empId = 0;
+            int depIndex = 0;
+            bool isValidInput = false;
+            bool isValidNumberInput = false;
+
+            // Check if there are no employees to assign/change department
+            if (manager.Employees.Count < 1)
+            {
+                Console.WriteLine("There are no employees to assign department.");
+                return;
+            }
+
+            // Assigning department to employee
+            while (!isValidInput)
+            {
+                Console.WriteLine("Enter Employee ID to assign department");
+                Console.Write("ID# ");
+                if (int.TryParse(Console.ReadLine(), out empId))
+                {
+                    Employee employeeToAssign = manager.Employees.FirstOrDefault(emp => emp.EmployeeId == empId);
+
+                    if (employeeToAssign != null)
+                    {
+                        Console.WriteLine("Select Department:");
+                        int departIndex = 1;
+                        foreach (Department department in Enum.GetValues(typeof(Department)))
+                        {
+                            Console.WriteLine($"{departIndex}. {department}");
+                            departIndex++;
+                        }
+
+                        while (!isValidNumberInput)
+                        {
+                            Console.Write("Enter Department (by number): ");
+                            if (int.TryParse(Console.ReadLine(), out depIndex))
+                            {
+                                if (Enum.IsDefined(typeof(Department), depIndex - 1))
+                                {
+                                    Department depSelected = (Department)(depIndex - 1);
+                                    manager.AssignEmployeeToDepartment(employeeToAssign, depSelected);
+
+                                    isValidInput = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Invalid number. Please enter a number from above.");
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine("Invalid input. Please enter a valid number.");
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine($"\nEmployee ID# {empId} is not found.\n");
+                        continue;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("\nInvalid input. Please enter a valid ID.\n");
+                    continue;
+                }
+            }
+        }
+        static void Line()
+        {
+            Console.WriteLine("\n---------------------------\n");
         }
     }
 }
